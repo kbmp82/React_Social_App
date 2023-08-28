@@ -52,6 +52,7 @@ export default function Search() {
     return () => clearTimeout(delay);
   }, [state.searchTerm]);
 
+  //return search results
   useEffect(() => {
     if (state.requestCount) {
       const axiosRequest = Axios.CancelToken.source();

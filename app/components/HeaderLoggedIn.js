@@ -7,6 +7,7 @@ import { Tooltip } from "react-tooltip";
 function HeaderLoggedIn() {
   const appDispatch = useContext(DispatchContext);
   const appState = useContext(StateContext);
+
   function handleLogout() {
     appDispatch({ type: "logout" });
   }
@@ -24,14 +25,24 @@ function HeaderLoggedIn() {
         <i className="fas fa-search"></i>
       </button>
       <Tooltip id="search" className="custom-tooltip" place="bottom" />{" "}
-      <span
+      <button
         data-tooltip-content="Chat"
         data-tooltip-id="chat"
-        className="mr-2 header-chat-icon text-white"
+        className={
+          "mr-2 header-chat-icon" +
+          (appState.unreadChatCount ? " text-danger" : " text-white")
+        }
+        onClick={() =>
+          appDispatch({ type: "triggerChat", value: !appState.isChatOpen })
+        }
       >
         <i className="fas fa-comment"></i>
-        <span className="chat-count-badge text-white"> </span>
-      </span>
+        {appState.unreadChatCount > 0 && (
+          <span className="chat-count-badge text-white">
+            {appState.unreadChatCount > 9 ? "9+" : appState.unreadChatCount}
+          </span>
+        )}
+      </button>
       <Tooltip id="chat" className="custom-tooltip" place="bottom" />{" "}
       <Link
         data-tooltip-content="Profile"

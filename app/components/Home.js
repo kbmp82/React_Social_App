@@ -61,8 +61,7 @@ function Home() {
       {state.feed.length == 0 && (
         <div className="container container--narrow py-md-5">
           <h2 className="text-center">
-            Hello {appState.user.name}
-            <strong></strong>, your feed is empty.
+            Hello <strong>{appState.user.username}</strong>, your feed is empty.
           </h2>
           <p className="lead text-muted text-center">
             Your feed displays the latest posts from the people you follow. If

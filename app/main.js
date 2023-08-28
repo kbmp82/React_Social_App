@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useImmerReducer } from "use-immer";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -21,6 +21,7 @@ import Profile from "./components/Profile";
 import EditPost from "./components/EditPost";
 import NotFound from "./components/NotFound";
 import Search from "./components/Search";
+import Chat from "./components/Chat";
 
 Axios.defaults.baseURL = "http://localhost:8080";
 
@@ -32,6 +33,8 @@ function Index() {
       ...JSON.parse(localStorage.getItem("user")),
     },
     isSearchOpen: false,
+    isChatOpen: false,
+    unreadChatCount: 0,
   };
 
   //using immer allows to mutate state - immer takes care of the handling
@@ -50,7 +53,16 @@ function Index() {
         break;
       case "triggerSearch":
         draftState.isSearchOpen = action.value;
-        return;
+        break;
+      case "triggerChat":
+        draftState.isChatOpen = action.value;
+        break;
+      case "incrementUnreadChatCount":
+        draftState.unreadChatCount++;
+        break;
+      case "clearUnreadChatCount":
+        draftState.unreadChatCount = 0;
+        break;
     }
   }
 
@@ -92,6 +104,7 @@ function Index() {
           >
             <Search />
           </CSSTransition>
+          <Chat />
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>

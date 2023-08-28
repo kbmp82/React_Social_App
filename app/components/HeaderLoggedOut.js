@@ -11,13 +11,28 @@ function HeaderLoggedOut() {
     e.preventDefault();
     e.target.reset();
 
-    Axios.post('/login', {
+    Axios.post("/login", {
       username,
       password,
     })
       .then((res) => {
-        if(res.data){
-          appDispatch({type: "login", value: res.data})
+        if (res.data) {
+          appDispatch({ type: "login", value: res.data });
+          appDispatch({
+            type: "flashMessage",
+            value: {
+              text: "You have successfully logged in.",
+              alertType: "success",
+            },
+          });
+        } else {
+          appDispatch({
+            type: "flashMessage",
+            value: {
+              text: "Username or password incorrect.",
+              alertType: "danger",
+            },
+          });
         }
       })
       .catch((error) => {
