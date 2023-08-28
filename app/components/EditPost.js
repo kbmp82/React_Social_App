@@ -91,7 +91,10 @@ export default function EditPost() {
           if (appState.user.username != res.data.author.username) {
             appDispatch({
               type: "flashMessage",
-              value: "You do not have permissiont to edit this post.",
+              value: {
+                text: "You do not have permissiont to edit this post.",
+                alertType: "danger",
+              },
             });
             setTimeout(() => {
               useNavigate(`/post/${state.id}`);
@@ -131,7 +134,10 @@ export default function EditPost() {
           dispatch({ type: "saveRequestFinished", value: res.data });
           appDispatch({
             type: "flashMessage",
-            value: "Your post has been updated.",
+            value: {
+              text: "Your post has been updated.",
+              alertType: "success",
+            },
           });
           setTimeout(() => {
             navigate(`/post/${state.id}`);

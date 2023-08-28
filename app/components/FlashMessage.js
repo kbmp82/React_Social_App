@@ -5,8 +5,14 @@ export default function FlashMessage({ messages }) {
     <div className="floating-alerts">
       {messages.map((msg, index) => {
         return (
-          <div key={index} className="alert alert-success text-center floating-alert shadow-sm">
-            {msg}
+          <div
+            key={index}
+            className={
+              "alert text-center floating-alert shadow-sm alert-" +
+              msg.alertType
+            }
+          >
+            {msg.text}
           </div>
         );
       })}

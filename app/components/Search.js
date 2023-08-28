@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from "react";
 import DispatchContext from "../DispatchContext";
 import { useImmer } from "use-immer";
 import Axios from "axios";
-import { Link } from "react-router-dom";
+import Post from "./Post";
 
 export default function Search() {
   const appDispatch = useContext(DispatchContext);
@@ -125,21 +125,13 @@ export default function Search() {
               </div>
               {state.results.map((post) => {
                 return (
-                  <Link
+                  <Post
                     key={post._id}
-                    to={`/post/${post._id}`}
                     onClick={() =>
                       appDispatch({ type: "triggerSearch", value: false })
                     }
-                    className="list-group-item list-group-item-action"
-                  >
-                    <img className="avatar-tiny" src={post.author.avatar} />{" "}
-                    <strong>{post.title}</strong>{" "}
-                    <span className="text-muted small">
-                      by {post.author.username} on{" "}
-                      {new Date(post.createdDate).toLocaleDateString()}{" "}
-                    </span>
-                  </Link>
+                    post={post}
+                  />
                 );
               })}
             </div>

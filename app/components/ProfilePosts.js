@@ -1,8 +1,8 @@
 import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
 import LoadingDotsIcon from "./LoadingDotsIcon";
+import Post from "./Post";
 
 function ProfilePosts() {
   const [isLoading, setIsLoading] = useState(true);
@@ -27,7 +27,7 @@ function ProfilePosts() {
     return () => {
       request.cancel();
     };
-  }, []);
+  }, [username]);
 
   if (isLoading)
     return (
@@ -39,18 +39,7 @@ function ProfilePosts() {
   return (
     <div className="list-group">
       {posts.map((post) => {
-        const date = new Date(post.createdDate).toDateString();
-        return (
-          <Link
-            to={`/post/${post._id}`}
-            key={post._id}
-            className="list-group-item list-group-item-action"
-          >
-            <img className="avatar-tiny" src={post.author.avatar} />{" "}
-            <strong>{post.title}</strong>{" "}
-            <span className="text-muted small">on {date}</span>
-          </Link>
-        );
+        return <Post post={post} hideAuthor={true} key={post._id} />;
       })}
     </div>
   );

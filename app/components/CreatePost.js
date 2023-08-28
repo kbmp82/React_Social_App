@@ -18,11 +18,17 @@ export default function CreatePost(props) {
     Axios.post("/create-post", {
       title,
       body,
-      token: appState.user.token
+      token: appState.user.token,
     })
       .then((res) => {
-        appDispatch({type: "flashMessage", value: "Congrats! Your post has been created."});
-        if(res.data) navigate(`/post/${res.data}`);
+        appDispatch({
+          type: "flashMessage",
+          value: {
+            text: "Congrats! Your post has been created.",
+            alertType: "success",
+          },
+        });
+        if (res.data) navigate(`/post/${res.data}`);
         console.log(res.data);
       })
       .catch((error) => {

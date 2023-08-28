@@ -31,13 +31,19 @@ export default function ViewSinglePost() {
           if (res.data) {
             appDispatch({
               type: "flashMessage",
-              value: "Post deleted successfully.",
+              value: {
+                text: "Post deleted successfully.",
+                alertType: "success",
+              },
             });
             navigate(`/profile/${appState.user.username}`);
           } else {
             appDispatch({
               type: "flashMessage",
-              value: "Post could not be deleted.",
+              value: {
+                text: "Post could not be deleted.",
+                alertType: "danger",
+              },
             });
           }
         } catch (error) {
@@ -139,7 +145,7 @@ export default function ViewSinglePost() {
           <Link to={`/profile/${post.author.username}`}>
             {post.author.username}
           </Link>{" "}
-          on {new Date(post.createdDate).toDateString()}
+          on {new Date(post.createdDate).toLocaleDateString()}
         </p>
 
         <div className="body-content">
