@@ -26,7 +26,8 @@ const Chat = React.lazy(() => import("./components/Chat"));
 import Protected from "./components/ProtectedRoute";
 import LoadingDotsIcon from "./components/LoadingDotsIcon";
 
-Axios.defaults.baseURL = process.env.BACKENDURL || "";
+Axios.defaults.baseURL =
+  process.env.BACKENDURL || "https://reactsocialappbackend.onrender.com";
 
 function Index() {
   const initialState = {

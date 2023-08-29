@@ -32,7 +32,9 @@ export default function Chat() {
 
   //watch for message from server
   useEffect(() => {
-    socket.current = io("http://localhost:8080");
+    socket.current = io(
+      process.env.BACKENDURL || "https://reactsocialappbackend.onrender.com"
+    );
     socket.current.on("chatFromServer", (message) => {
       setState((draft) => {
         draft.messages.push(message);
