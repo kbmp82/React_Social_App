@@ -27,7 +27,7 @@ class RunAfterCompile {
 }
 
 config = {
-  entry: "./app/Main.js",
+  entry: "./app/main.js",
   output: {
     publicPath: "/",
     path: path.resolve(__dirname, "app"),
