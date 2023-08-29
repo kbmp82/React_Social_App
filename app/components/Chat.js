@@ -4,9 +4,9 @@ import StateContext from "../StateContext";
 import { useImmer } from "use-immer";
 import { Link } from "react-router-dom";
 import io from "socket.io-client";
-const socket = io("http://localhost:8080");
 
 export default function Chat() {
+  const socket = useRef(null);
   const appDispatch = useContext(DispatchContext);
   const appState = useContext(StateContext);
   const chatInput = useRef(null);
@@ -32,7 +32,8 @@ export default function Chat() {
 
   //watch for message from server
   useEffect(() => {
-    socket.on("chatFromServer", (message) => {
+    socket.current = io("http://localhost:8080");
+    socket.current.on("chatFromServer", (message) => {
       setState((draft) => {
         draft.messages.push(message);
       });
@@ -41,6 +42,7 @@ export default function Chat() {
       //     appDispatch({ type: "triggerChat", value: true });
       //   }
     });
+    return () => socket.current.disconnect();
   }, []);
 
   //watch chat log for changes and scroll to bottom
@@ -55,7 +57,7 @@ export default function Chat() {
     e.preventDefault();
     if (!state.inputValue.trim()) return;
     //send message to chat server
-    socket.emit("chatFromBrowser", {
+    socket.current.emit("chatFromBrowser", {
       message: state.inputValue,
       token: appState.user.token,
     });

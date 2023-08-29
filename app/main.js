@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, Suspense } from "react";
 import { useImmerReducer } from "use-immer";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, redirect } from "react-router-dom";
 import StateContext from "./StateContext";
 import DispatchContext from "./DispatchContext";
 import { CSSTransition } from "react-transition-group";
+import Axios from "axios";
 
 //components
 import Header from "./components/Header";
@@ -13,18 +14,19 @@ import HomeGuest from "./components/HomeGuest";
 import About from "./components/About";
 import Terms from "./components/Terms";
 import Home from "./components/Home";
-import CreatePost from "./components/CreatePost";
-import Axios from "axios";
-import ViewSinglePost from "./components/ViewSinglePost";
+//lazy load example, wait until page is accessed to download component
+const CreatePost = React.lazy(() => import("./components/CreatePost"));
+const ViewSinglePost = React.lazy(() => import("./components/ViewSinglePost"));
 import FlashMessage from "./components/FlashMessage";
 import Profile from "./components/Profile";
 import EditPost from "./components/EditPost";
 import NotFound from "./components/NotFound";
-import Search from "./components/Search";
-import Chat from "./components/Chat";
+const Search = React.lazy(() => import("./components/Search"));
+const Chat = React.lazy(() => import("./components/Chat"));
 import Protected from "./components/ProtectedRoute";
+import LoadingDotsIcon from "./components/LoadingDotsIcon";
 
-Axios.defaults.baseURL = "http://localhost:8080";
+Axios.defaults.baseURL = process.env.BACKENDURL || "";
 
 function Index() {
   const initialState = {
@@ -113,57 +115,63 @@ function Index() {
         <BrowserRouter>
           <FlashMessage messages={state.flashMessages} />
           <Header />
-          <Routes>
-            <Route
-              exact
-              path="/"
-              element={state.loggedIn ? <Home /> : <HomeGuest />}
-            />
-            <Route
-              path="/profile/:username/*"
-              element={
-                <Protected isLoggedIn={state.loggedIn}>
-                  <Profile />
-                </Protected>
-              }
-            />
-            <Route
-              path="/post/:id"
-              element={
-                <Protected isLoggedIn={state.loggedIn}>
-                  <ViewSinglePost />
-                </Protected>
-              }
-            />
-            <Route
-              path="/post/:id/edit"
-              element={
-                <Protected isLoggedIn={state.loggedIn}>
-                  <EditPost />
-                </Protected>
-              }
-            />
-            <Route
-              path="/create-post"
-              element={
-                <Protected isLoggedIn={state.loggedIn}>
-                  <CreatePost />
-                </Protected>
-              }
-            />
-            <Route path="/about-us" element={<About />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<LoadingDotsIcon />}>
+            <Routes>
+              <Route
+                exact
+                path="/"
+                element={state.loggedIn ? <Home /> : <HomeGuest />}
+              />
+              <Route
+                path="/profile/:username/*"
+                element={
+                  <Protected isLoggedIn={state.loggedIn}>
+                    <Profile />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/post/:id"
+                element={
+                  <Protected isLoggedIn={state.loggedIn}>
+                    <ViewSinglePost />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/post/:id/edit"
+                element={
+                  <Protected isLoggedIn={state.loggedIn}>
+                    <EditPost />
+                  </Protected>
+                }
+              />
+              <Route
+                path="/create-post"
+                element={
+                  <Protected isLoggedIn={state.loggedIn}>
+                    <CreatePost />
+                  </Protected>
+                }
+              />
+              <Route path="/about-us" element={<About />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
           <CSSTransition
             timeout={333}
             in={state.isSearchOpen}
             classNames="search-overlay"
             unmountOnExit
           >
-            <Search />
+            <div className="search-overlay">
+              <Suspense fallback="">
+                <Search />
+              </Suspense>
+            </div>
           </CSSTransition>
-          <Chat />
+          <Suspense fallback="">{state.loggedIn && <Chat />}</Suspense>
           <Footer />
         </BrowserRouter>
       </DispatchContext.Provider>
