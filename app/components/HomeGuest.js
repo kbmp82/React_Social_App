@@ -111,7 +111,6 @@ function HomeGuest() {
         }
         break;
       case "checkFormReady":
-        console.log("checking form");
         if (
           draft.username.value.length &&
           !draft.username.hasErrors &&
@@ -120,18 +119,7 @@ function HomeGuest() {
           draft.password.value.length &&
           !draft.password.hasErrors
         ) {
-          console.log("no errors");
           draft.formReady = true;
-        } else {
-          console.log(
-            "has errors",
-            draft.username.value.length,
-            draft.username.hasErrors,
-            draft.email.value.length,
-            draft.email.hasErrors,
-            draft.password.value.length,
-            draft.password.hasErrors
-          );
         }
         break;
       case "submitForm":
@@ -227,7 +215,7 @@ function HomeGuest() {
       password: state.password.value,
     })
       .then((res) => {
-        console.log("user created successfully", res);
+        // console.log("user created successfully", res);
         appDispatch({
           type: "flashMessage",
           value: {

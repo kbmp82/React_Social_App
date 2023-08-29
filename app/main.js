@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useImmerReducer } from "use-immer";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, redirect } from "react-router-dom";
 import StateContext from "./StateContext";
 import DispatchContext from "./DispatchContext";
 import { CSSTransition } from "react-transition-group";
@@ -22,6 +22,7 @@ import EditPost from "./components/EditPost";
 import NotFound from "./components/NotFound";
 import Search from "./components/Search";
 import Chat from "./components/Chat";
+import Protected from "./components/ProtectedRoute";
 
 Axios.defaults.baseURL = "http://localhost:8080";
 
@@ -47,6 +48,7 @@ function Index() {
       case "logout":
         draftState.loggedIn = false;
         draftState.user = {};
+        redirect("/");
         break;
       case "flashMessage":
         draftState.flashMessages.push(action.value);
@@ -76,6 +78,35 @@ function Index() {
     }
   }, [state.loggedIn]);
 
+  //check if token has expired on first render
+  useEffect(() => {
+    if (state.loggedIn) {
+      const axiosRequest = Axios.CancelToken.source();
+      try {
+        (async () => {
+          const res = await Axios.post(
+            "/checkToken",
+            { token: state.user.token },
+            { CancelToken: axiosRequest }
+          );
+          if (!res.data) {
+            dispatch({
+              type: "flashMessage",
+              value: {
+                text: "Your session has expired. Please log in again.",
+                alertType: "danger",
+              },
+            });
+            dispatch({ type: "logout" });
+          }
+        })();
+      } catch (error) {
+        console.log(error);
+      }
+      return () => axiosRequest.cancel();
+    }
+  }, []);
+
   return (
     <StateContext.Provider value={state}>
       <DispatchContext.Provider value={dispatch}>
@@ -88,10 +119,38 @@ function Index() {
               path="/"
               element={state.loggedIn ? <Home /> : <HomeGuest />}
             />
-            <Route path="/profile/:username/*" element={<Profile />} />
-            <Route path="/post/:id" element={<ViewSinglePost />} />
-            <Route path="/post/:id/edit" element={<EditPost />} />
-            <Route path="/create-post" element={<CreatePost />} />
+            <Route
+              path="/profile/:username/*"
+              element={
+                <Protected isLoggedIn={state.loggedIn}>
+                  <Profile />
+                </Protected>
+              }
+            />
+            <Route
+              path="/post/:id"
+              element={
+                <Protected isLoggedIn={state.loggedIn}>
+                  <ViewSinglePost />
+                </Protected>
+              }
+            />
+            <Route
+              path="/post/:id/edit"
+              element={
+                <Protected isLoggedIn={state.loggedIn}>
+                  <EditPost />
+                </Protected>
+              }
+            />
+            <Route
+              path="/create-post"
+              element={
+                <Protected isLoggedIn={state.loggedIn}>
+                  <CreatePost />
+                </Protected>
+              }
+            />
             <Route path="/about-us" element={<About />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="*" element={<NotFound />} />
