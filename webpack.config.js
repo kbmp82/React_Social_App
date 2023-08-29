@@ -80,7 +80,7 @@ if (currentTask == "webpackBuild") {
   config.mode = "production";
   config.output = {
     publicPath: "/",
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "docs"),
     filename: "[name].[chunkhash].js",
     chunkFilename: "[name].[chunkhash].js",
   };
